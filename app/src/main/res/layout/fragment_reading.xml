@@ -9,4 +9,69 @@
     <TextView android:id="@+id/section_label" android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Temp:"
+        android:id="@+id/txtTempLabel"
+        android:layout_below="@+id/section_label"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="0"
+        android:id="@+id/txtTempReading"
+        android:layout_below="@+id/txtTempLabel"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Atmospheric Pressure:"
+        android:id="@+id/txtHumudityLabel"
+        android:layout_below="@+id/txtTempReading"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="36dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="*Bar"
+        android:id="@+id/txtHumidityReading"
+        android:layout_below="@+id/txtHumudityLabel"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Humidity:"
+        android:id="@+id/txtHumidityLabel"
+        android:layout_below="@+id/txtHumidityReading"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="46dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="n%"
+        android:id="@+id/txtHumidtyReading"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save Current Reading"
+        android:id="@+id/btnSaveReading"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="70dp" />
+
 </RelativeLayout>

@@ -1,22 +1,22 @@
 package bit.mazurdm1.atmos;
 
 import android.app.Activity;
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 
 public class Reading_Activity extends ActionBarActivity
@@ -31,6 +31,7 @@ public class Reading_Activity extends ActionBarActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+    private SensorActivity sensorManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,8 @@ public class Reading_Activity extends ActionBarActivity
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
+        sensorManager = new SensorActivity();
+
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -52,7 +55,7 @@ public class Reading_Activity extends ActionBarActivity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.container, ReadDataFragment.newInstance(position + 1))
                 .commit();
     }
 
@@ -109,7 +112,7 @@ public class Reading_Activity extends ActionBarActivity
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class ReadDataFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -120,15 +123,15 @@ public class Reading_Activity extends ActionBarActivity
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static ReadDataFragment newInstance(int sectionNumber) {
+            ReadDataFragment fragment = new ReadDataFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
 
-        public PlaceholderFragment() {
+        public ReadDataFragment() {
         }
 
         @Override
@@ -143,6 +146,54 @@ public class Reading_Activity extends ActionBarActivity
             super.onAttach(activity);
             ((Reading_Activity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
+        }
+    }
+    public class SensorActivity extends Activity implements SensorEventListener {
+        private SensorManager mSensorManager;
+        private Sensor mPressure;
+        private Sensor mTemp;
+        private Sensor mHumid;
+
+        @Override
+        public final void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_reading);
+
+            // Get an instance of the sensor service, and use that to get an instance of
+            // a particular sensor.
+            mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            mPressure = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+            mTemp = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+            mHumid = mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+        }
+
+        @Override
+        public final void onAccuracyChanged(Sensor sensor, int accuracy) {
+            // Do something here if sensor accuracy changes.
+        }
+
+        @Override
+        public final void onSensorChanged(SensorEvent event) {
+            float millibars_of_pressure = event.values[0];
+            float temp_in_celcius = event.values[1];
+            float reletive_humidity = event.values[2];
+            // Do something with this sensor data.
+        }
+
+        @Override
+        protected void onResume() {
+            // Register a listener for the sensor.
+            super.onResume();
+            mSensorManager.registerListener(this, mPressure, SensorManager.SENSOR_DELAY_NORMAL);
+            mSensorManager.registerListener(this, mTemp, SensorManager.SENSOR_DELAY_NORMAL);
+            mSensorManager.registerListener(this, mHumid, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+
+        @Override
+        protected void onPause() {
+            // Be sure to unregister the sensor when the activity pauses.
+            super.onPause();
+            mSensorManager.unregisterListener(this);
         }
     }
 
