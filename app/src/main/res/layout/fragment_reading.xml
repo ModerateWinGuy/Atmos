@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Atmospheric Pressure:"
-        android:id="@+id/txtHumudityLabel"
+        android:id="@+id/txtPressureLabel"
         android:layout_below="@+id/txtTempReading"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="36dp" />
@@ -42,8 +42,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="*Bar"
-        android:id="@+id/txtHumidityReading"
-        android:layout_below="@+id/txtHumudityLabel"
+        android:id="@+id/txtPressureReading"
+        android:layout_below="@+id/txtPressureLabel"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -52,7 +52,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Humidity:"
         android:id="@+id/txtHumidityLabel"
-        android:layout_below="@+id/txtHumidityReading"
+        android:layout_below="@+id/txtPressureReading"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="46dp" />
 

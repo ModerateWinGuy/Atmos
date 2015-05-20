@@ -17,10 +17,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.TextView;
+
+import java.text.DecimalFormat;
 
 
 public class Reading_Activity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, SensorEventListener  {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -31,7 +34,12 @@ public class Reading_Activity extends ActionBarActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
-    private SensorActivity sensorManager;
+    private SensorManager sensorManager;
+    private Sensor mPressure;
+    private Sensor mTemp;
+    private Sensor mHumid;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +49,13 @@ public class Reading_Activity extends ActionBarActivity
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
-        sensorManager = new SensorActivity();
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mPressure = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        mTemp = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        mHumid = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+        sensorManager.registerListener(this, mPressure, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, mTemp, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, mHumid, SensorManager.SENSOR_DELAY_NORMAL);
 
 
         // Set up the drawer.
@@ -49,6 +63,21 @@ public class Reading_Activity extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
+    @Override
+    protected void onResume() {
+        // Register a listener for the sensor.
+        super.onResume();
+        sensorManager.registerListener(this, mPressure, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, mTemp, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, mHumid, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+    @Override
+    protected void onPause() {
+        // Be sure to unregister the sensor when the activity pauses.
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
+
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
@@ -109,6 +138,41 @@ public class Reading_Activity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent event)
+    {
+        //Read in the value from the event
+        float sensorValue = event.values[0];
+        double sensorVal = sensorValue;
+        DecimalFormat df = new DecimalFormat("#.00");
+        String toDisplay = df.format(sensorVal).toString();
+        //Set the corrasponding text by checking which sensor raised the event
+        switch (event.sensor.getType())
+        {
+            case Sensor.TYPE_AMBIENT_TEMPERATURE:
+                TextView tempText = (TextView)findViewById(R.id.txtTempReading);
+                tempText.setText(toDisplay);
+                break;
+
+            case Sensor.TYPE_RELATIVE_HUMIDITY:
+                TextView humidText = (TextView)findViewById(R.id.txtHumidtyReading);
+                humidText.setText(toDisplay);
+                break;
+
+            case Sensor.TYPE_PRESSURE:
+                TextView pressureText = (TextView)findViewById(R.id.txtPressureReading);
+                pressureText.setText(toDisplay);
+                break;
+
+        }
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -148,53 +212,4 @@ public class Reading_Activity extends ActionBarActivity
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
-    public class SensorActivity extends Activity implements SensorEventListener {
-        private SensorManager mSensorManager;
-        private Sensor mPressure;
-        private Sensor mTemp;
-        private Sensor mHumid;
-
-        @Override
-        public final void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_reading);
-
-            // Get an instance of the sensor service, and use that to get an instance of
-            // a particular sensor.
-            mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-            mPressure = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
-            mTemp = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
-            mHumid = mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
-        }
-
-        @Override
-        public final void onAccuracyChanged(Sensor sensor, int accuracy) {
-            // Do something here if sensor accuracy changes.
-        }
-
-        @Override
-        public final void onSensorChanged(SensorEvent event) {
-            float millibars_of_pressure = event.values[0];
-            float temp_in_celcius = event.values[1];
-            float reletive_humidity = event.values[2];
-            // Do something with this sensor data.
-        }
-
-        @Override
-        protected void onResume() {
-            // Register a listener for the sensor.
-            super.onResume();
-            mSensorManager.registerListener(this, mPressure, SensorManager.SENSOR_DELAY_NORMAL);
-            mSensorManager.registerListener(this, mTemp, SensorManager.SENSOR_DELAY_NORMAL);
-            mSensorManager.registerListener(this, mHumid, SensorManager.SENSOR_DELAY_NORMAL);
-        }
-
-        @Override
-        protected void onPause() {
-            // Be sure to unregister the sensor when the activity pauses.
-            super.onPause();
-            mSensorManager.unregisterListener(this);
-        }
-    }
-
 }
