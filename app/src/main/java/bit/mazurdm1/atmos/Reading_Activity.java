@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class Reading_Activity extends ActionBarActivity
         currentTemp = 0;
 
         //TODO Work on spinner
-
+        readInLocations();
 
         //Set up the sensors for reading in
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -104,7 +105,9 @@ public class Reading_Activity extends ActionBarActivity
     @Override
     protected void onStop()
     {
+        super.onStop();
         //Saves the data list out to a file when the program stops
+        saveOutLocations();
         try
         {
             FileOutputStream fos = openFileOutput("SavedDataFile", Context.MODE_PRIVATE);
@@ -119,6 +122,7 @@ public class Reading_Activity extends ActionBarActivity
         LogData newReading;
         newReading = new LogData(currentTemp, currentPressure, currentHumid);
         dataList.add(newReading);
+        Toast.makeText(this, "Reading saved", Toast.LENGTH_SHORT).show();
     }
     private void addNewLocation()
     {
@@ -128,6 +132,7 @@ public class Reading_Activity extends ActionBarActivity
         if (locationName != "")
         {
             locationOptions.add(locationName);
+            Toast.makeText(this, locationName +" added.", Toast.LENGTH_SHORT).show();
         }
         else
         {
@@ -136,7 +141,7 @@ public class Reading_Activity extends ActionBarActivity
     }
 
 
-    private void readInLocations()//TODO Test reading in from file for tag options
+    private void readInLocations()
     {
         try
         {
@@ -146,24 +151,8 @@ public class Reading_Activity extends ActionBarActivity
             {
                 locationOptions.add(inputString);
             }
-        }
-        catch(Exception ex) // TODO add specific error catches
-        {
-            throw new Error("Generic error, I'm a bad person");
-        }
-    }
 
-
-    private void saveOutLocations()//TODO Test Saving out locations works
-    {
-        FileOutputStream fos = null;
-        try
-        {
-            fos = openFileOutput("Locations", Context.MODE_PRIVATE);
-            for(String txt : locationOptions)
-            {
-                fos.write(txt.getBytes());
-            }
+            inputReader.close();
         } catch (FileNotFoundException e)
         {
             e.printStackTrace();
@@ -171,11 +160,30 @@ public class Reading_Activity extends ActionBarActivity
         {
             e.printStackTrace();
         }
+
     }
 
 
+    private void saveOutLocations()
+    {
+        //Read in a list of all used location tags so the spinner can be populated with them
+        try
+        {
+            FileOutputStream fos = openFileOutput("Locations", Context.MODE_PRIVATE);
+            PrintWriter pr = new PrintWriter(fos);
 
+            for(String txt : locationOptions)
+            {
+                pr.println(txt);
+            }
+            pr.flush();
+            pr.close();
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
 
+    }
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
@@ -183,11 +191,6 @@ public class Reading_Activity extends ActionBarActivity
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
-
-
-
-
-
 
     @Override
     public void onSensorChanged(SensorEvent event)
@@ -197,7 +200,7 @@ public class Reading_Activity extends ActionBarActivity
         double sensorVal = sensorValue;
         DecimalFormat df = new DecimalFormat("#.00");
         String toDisplay = df.format(sensorVal).toString();
-        //Set the corrasponding text by checking which sensor raised the event
+        //Set the corresponding text by checking which sensor raised the event
         switch (event.sensor.getType())
         {
             case Sensor.TYPE_AMBIENT_TEMPERATURE:
