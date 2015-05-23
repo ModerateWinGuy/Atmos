@@ -32,7 +32,7 @@ public class LogData
         stamp = new Timestamp(System.currentTimeMillis());
     }
     //Constructor for when timestamp needs to be explicitly set (ie during reading old data)
-    public LogData(double sTemp, double sPressure, double sHumidity, int milsTimeStamp)
+    public LogData(double sTemp, double sPressure, double sHumidity, long milsTimeStamp)
     {
         temp = sTemp;
         pressure = sPressure;
@@ -44,11 +44,11 @@ public class LogData
     private static LogData loadData(String loadString)
     {
         double loadTemp, loadPressure, loadHumidity;
-        int timeStamp;
+        long timeStamp;
         loadTemp = Double.parseDouble(loadString.split(",")[0]);
         loadPressure = Double.parseDouble(loadString.split(",")[1]);
         loadHumidity = Double.parseDouble(loadString.split(",")[2]);
-        timeStamp = Integer.parseInt(loadString.split(",")[3]);
+        timeStamp = Long.parseLong(loadString.split(",")[3]);
 
         return new LogData(loadTemp, loadPressure, loadHumidity, timeStamp);
     }

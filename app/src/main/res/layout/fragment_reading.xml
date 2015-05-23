@@ -95,9 +95,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/editTxtNewLocation"
         android:layout_below="@+id/txtAddNewLabel"
-        android:layout_toLeftOf="@+id/txtTempReading"
         android:layout_toRightOf="@+id/section_label"
-        android:layout_toEndOf="@+id/section_label"/>
+        android:layout_alignRight="@+id/txtLocationLabel"
+        android:layout_alignEnd="@+id/txtLocationLabel"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -105,9 +105,9 @@
         android:layout_height="wrap_content"
         android:text="Add Location"
         android:id="@+id/btnAddNewLocation"
-        android:layout_below="@+id/txtAddNewLabel"
-        android:layout_toRightOf="@+id/txtTempReading"
-        android:layout_toEndOf="@+id/txtTempReading"/>
+        android:layout_alignTop="@+id/editTxtNewLocation"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -116,13 +116,6 @@
         android:text="Select added Location"
         android:id="@+id/txtOldLocationLabel"
         android:layout_below="@+id/btnAddNewLocation"
-        android:layout_centerHorizontal="true"/>
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinnerLocations"
-        android:layout_below="@+id/txtOldLocationLabel"
         android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>
