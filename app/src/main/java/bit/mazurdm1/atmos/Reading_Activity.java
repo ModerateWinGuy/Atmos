@@ -6,7 +6,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
@@ -160,9 +159,7 @@ public class Reading_Activity extends ActionBarActivity
         {
             e.printStackTrace();
         }
-
     }
-
 
     private void saveOutLocations()
     {
@@ -183,13 +180,6 @@ public class Reading_Activity extends ActionBarActivity
             e.printStackTrace();
         }
 
-    }
-
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
     }
 
     @Override
@@ -220,7 +210,6 @@ public class Reading_Activity extends ActionBarActivity
                 TextView pressureText = (TextView)findViewById(R.id.txtPressureReading);
                 pressureText.setText(toDisplay);
                 break;
-
         }
 
     }
