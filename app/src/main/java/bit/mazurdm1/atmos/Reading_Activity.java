@@ -17,13 +17,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.GenericSignatureFormatError;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -41,20 +47,44 @@ public class Reading_Activity extends ActionBarActivity
     private CharSequence mTitle;
     private SensorManager sensorManager;
     private Sensor mPressure;
+    private double currentPressure;
     private Sensor mTemp;
+    private double currentTemp;
     private Sensor mHumid;
+    private double currentHumid;
     private List<LogData> dataList;
+    private List<String> locationOptions;
 
+    private Button addLocationBtn;
+    private Button logReadingBtn;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reading);
+        locationOptions = new ArrayList<String>();
+        currentHumid = 0;
+        currentPressure = 0;
+        currentTemp = 0;
+        logReadingBtn = (Button)findViewById(R.id.btnSaveReading);
+        // bind the take reading method to the click of the button
+        logReadingBtn.setOnClickListener(new View.OnClickListener(){        // ERROR is occurring here
+            @Override
+            public void onClick(View v){takeReadings();
+            }});
+        addLocationBtn = (Button)findViewById(R.id.btnAddNewLocation);
+        //Bind the click of the location button to the add new location method
+        addLocationBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){addNewLocation();
+            }});
+        //TODO Work on spinner
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
+        //Set up the sensors for reading in
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mPressure = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
         mTemp = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
@@ -101,6 +131,64 @@ public class Reading_Activity extends ActionBarActivity
             FileOutputStream fos = openFileOutput("SavedDataFile", Context.MODE_PRIVATE);
             LogData.saveDataList(dataList, fos);
         } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    private void takeReadings()
+    {
+        LogData newReading;
+        newReading = new LogData(currentTemp, currentPressure, currentHumid);
+        dataList.add(newReading);
+    }
+    private void addNewLocation()
+    {
+        String locationName = "";
+        EditText userInput = (EditText)findViewById(R.id.editTxtNewLocation);
+        locationName = userInput.getText().toString();
+        if (locationName != "")
+        {
+            locationOptions.add(locationName);
+        }
+        else
+        {
+            Toast.makeText(this, "To add a location you just give it a name", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    private void readInLocations()//TODO Test reading in from file for tag options
+    {
+        try
+        {
+            BufferedReader inputReader = new BufferedReader(new InputStreamReader(openFileInput("Locations")));
+            String inputString;
+            while((inputString=inputReader.readLine()) != null)
+            {
+                locationOptions.add(inputString);
+            }
+        }
+        catch(Exception ex) // TODO add specific error catches
+        {
+            throw new Error("Generic error, I'm a bad person");
+        }
+    }
+
+
+    private void saveOutLocations()//TODO Test Saving out locations works
+    {
+        FileOutputStream fos = null;
+        try
+        {
+            fos = openFileOutput("Locations", Context.MODE_PRIVATE);
+            for(String txt : locationOptions)
+            {
+                fos.write(txt.getBytes());
+            }
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        } catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -180,16 +268,19 @@ public class Reading_Activity extends ActionBarActivity
         switch (event.sensor.getType())
         {
             case Sensor.TYPE_AMBIENT_TEMPERATURE:
+                currentTemp = sensorVal;
                 TextView tempText = (TextView)findViewById(R.id.txtTempReading);
                 tempText.setText(toDisplay);
                 break;
 
             case Sensor.TYPE_RELATIVE_HUMIDITY:
+                currentHumid = sensorVal;
                 TextView humidText = (TextView)findViewById(R.id.txtHumidtyReading);
                 humidText.setText(toDisplay);
                 break;
 
             case Sensor.TYPE_PRESSURE:
+                currentPressure = sensorVal;
                 TextView pressureText = (TextView)findViewById(R.id.txtPressureReading);
                 pressureText.setText(toDisplay);
                 break;
