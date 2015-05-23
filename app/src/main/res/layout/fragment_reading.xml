@@ -34,8 +34,7 @@
         android:text="Atmospheric Pressure:"
         android:id="@+id/txtPressureLabel"
         android:layout_below="@+id/txtTempReading"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="36dp" />
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -53,8 +52,8 @@
         android:text="Humidity:"
         android:id="@+id/txtHumidityLabel"
         android:layout_below="@+id/txtPressureReading"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="46dp" />
+        android:layout_alignRight="@+id/txtLocationLabel"
+        android:layout_alignEnd="@+id/txtLocationLabel"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -62,8 +61,8 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="n%"
         android:id="@+id/txtHumidtyReading"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/txtHumidityLabel"
+        android:layout_centerHorizontal="true"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -71,7 +70,59 @@
         android:text="Save Current Reading"
         android:id="@+id/btnSaveReading"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="70dp" />
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Location"
+        android:id="@+id/txtLocationLabel"
+        android:layout_below="@+id/txtHumidtyReading"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Add New Location"
+        android:id="@+id/txtAddNewLabel"
+        android:layout_below="@+id/txtLocationLabel"
+        android:layout_centerHorizontal="true"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:layout_below="@+id/txtAddNewLabel"
+        android:layout_toLeftOf="@+id/txtTempReading"
+        android:layout_toRightOf="@+id/section_label"
+        android:layout_toEndOf="@+id/section_label"/>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Location"
+        android:id="@+id/btnAddNewLocation"
+        android:layout_below="@+id/txtAddNewLabel"
+        android:layout_toRightOf="@+id/txtTempReading"
+        android:layout_toEndOf="@+id/txtTempReading"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Select added Location"
+        android:id="@+id/txtOldLocationLabel"
+        android:layout_below="@+id/btnAddNewLocation"
+        android:layout_centerHorizontal="true"/>
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinnerLocations"
+        android:layout_below="@+id/txtOldLocationLabel"
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

@@ -19,7 +19,12 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
+import java.util.List;
 
 
 public class Reading_Activity extends ActionBarActivity
@@ -38,6 +43,7 @@ public class Reading_Activity extends ActionBarActivity
     private Sensor mPressure;
     private Sensor mTemp;
     private Sensor mHumid;
+    private List<LogData> dataList;
 
 
 
@@ -57,6 +63,15 @@ public class Reading_Activity extends ActionBarActivity
         sensorManager.registerListener(this, mTemp, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, mHumid, SensorManager.SENSOR_DELAY_NORMAL);
 
+        // Load in all saved file data
+        try
+        {
+            BufferedReader inputReader = new BufferedReader(new InputStreamReader(openFileInput("SavedDataFile")));
+            dataList = LogData.loadFromFile(inputReader);
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -77,6 +92,21 @@ public class Reading_Activity extends ActionBarActivity
         super.onPause();
         sensorManager.unregisterListener(this);
     }
+    @Override
+    protected void onStop()
+    {
+        //Saves the data list out to a file when the program stops
+        try
+        {
+            FileOutputStream fos = openFileOutput("SavedDataFile", Context.MODE_PRIVATE);
+            LogData.saveDataList(dataList, fos);
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
 
 
     @Override
