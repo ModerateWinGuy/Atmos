@@ -21,6 +21,8 @@ public class LogData
     private double humidity; // In %
     private Timestamp stamp;
 
+    //TODO add in string for tags and make it read in/out
+
     // default constructor for when the time of creation is the timestamp
     public LogData(double sTemp, double sPressure, double sHumidity)
     {
