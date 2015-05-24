@@ -97,7 +97,8 @@
         android:hint="Add new location Name"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/section_label"
-        android:layout_toEndOf="@+id/section_label"/>
+        android:layout_alignRight="@+id/txtAddNewLabel"
+        android:layout_alignEnd="@+id/txtAddNewLabel"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -105,9 +106,9 @@
         android:layout_height="wrap_content"
         android:text="Add Location"
         android:id="@+id/btnAddNewLocation"
-        android:layout_alignTop="@+id/editTxtNewLocation"
-        android:layout_toRightOf="@+id/txtTempLabel"
-        android:layout_toEndOf="@+id/txtTempLabel"/>
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/txtAddNewLabel"
+        android:layout_toEndOf="@+id/txtAddNewLabel"/>
 
     <TextView
         android:layout_width="wrap_content"
