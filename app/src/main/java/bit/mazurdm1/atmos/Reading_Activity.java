@@ -1,15 +1,22 @@
 package bit.mazurdm1.atmos;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.BufferedReader;
@@ -26,7 +33,9 @@ import java.util.List;
 public class Reading_Activity extends ActionBarActivity
         implements  SensorEventListener  {
 
-    private CharSequence mTitle;
+    private static final String LOCATION_FILENAME = "Locations";
+    private static final String LOG_FILENAME = "SavedDataFile";
+
     private SensorManager sensorManager;
     private Sensor mPressure;
     private double currentPressure;
@@ -36,6 +45,7 @@ public class Reading_Activity extends ActionBarActivity
     private double currentHumid;
     private List<LogData> dataList;
     private List<String> locationOptions;
+    private Spinner locationSpinner;
 
 
     @Override
@@ -43,10 +53,13 @@ public class Reading_Activity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_reading);
 
-        locationOptions = new ArrayList<String>();
+
+        locationOptions = new ArrayList<>();
         currentHumid = 0;
         currentPressure = 0;
         currentTemp = 0;
+        //deleteLocationTagFile();
+        //deleteLogFile();
 
         //TODO Work on spinner
         readInLocations();
@@ -72,19 +85,53 @@ public class Reading_Activity extends ActionBarActivity
         addLocationBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){addNewLocation();
+                populateSpinner();
             }});
+        locationSpinner = (Spinner)findViewById(R.id.spinnerLocations);
+        locationSpinner.setPrompt("Select a location to tag the reading as");
 
 
         // Load in all saved file data
         try
         {
-            BufferedReader inputReader = new BufferedReader(new InputStreamReader(openFileInput("SavedDataFile")));
+            BufferedReader inputReader = new BufferedReader(new InputStreamReader(openFileInput(LOG_FILENAME)));
             dataList = LogData.loadFromFile(inputReader);
         } catch (FileNotFoundException e)
         {
             e.printStackTrace();
         }
+        populateSpinner();
 
+    }
+    private void deleteLogFile()
+    {
+        try // for clearing the files when i make mistakes
+        {
+            FileOutputStream fos = openFileOutput(LOG_FILENAME, Context.MODE_PRIVATE);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    private void deleteLocationTagFile()
+    {
+        try // for clearing the files when i make mistakes
+        {
+            FileOutputStream fos = openFileOutput(LOCATION_FILENAME, Context.MODE_PRIVATE);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -109,17 +156,31 @@ public class Reading_Activity extends ActionBarActivity
         saveOutLocations();
         try
         {
-            FileOutputStream fos = openFileOutput("SavedDataFile", Context.MODE_PRIVATE);
+            FileOutputStream fos = openFileOutput(LOG_FILENAME, Context.MODE_PRIVATE);
             LogData.saveDataList(dataList, fos);
+
         } catch (FileNotFoundException e)
         {
             e.printStackTrace();
         }
     }
+    private void populateSpinner()
+    {
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, locationOptions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        locationSpinner.setPrompt("Select a location to tag with");
+
+        locationSpinner.setAdapter(
+                new NothingSelectedSpinnerAdapter(
+                        adapter,
+                        R.layout.contact_spinner_row_nothing_selected,
+                        // R.layout.contact_spinner_nothing_selected_dropdown, // Optional
+                        this));
+    }
     private void takeReadings()
     {
         LogData newReading;
-        newReading = new LogData(currentTemp, currentPressure, currentHumid);
+        newReading = new LogData(currentTemp, currentPressure, currentHumid, locationOptions.get(locationSpinner.getSelectedItemPosition()));
         dataList.add(newReading);
         Toast.makeText(this, "Reading saved", Toast.LENGTH_SHORT).show();
     }
@@ -144,7 +205,7 @@ public class Reading_Activity extends ActionBarActivity
     {
         try
         {
-            BufferedReader inputReader = new BufferedReader(new InputStreamReader(openFileInput("Locations")));
+            BufferedReader inputReader = new BufferedReader(new InputStreamReader(openFileInput(LOCATION_FILENAME)));
             String inputString;
             while((inputString=inputReader.readLine()) != null)
             {
@@ -166,13 +227,14 @@ public class Reading_Activity extends ActionBarActivity
         //Read in a list of all used location tags so the spinner can be populated with them
         try
         {
-            FileOutputStream fos = openFileOutput("Locations", Context.MODE_PRIVATE);
+            FileOutputStream fos = openFileOutput(LOCATION_FILENAME, Context.MODE_PRIVATE);
             PrintWriter pr = new PrintWriter(fos);
 
             for(String txt : locationOptions)
             {
                 pr.println(txt);
             }
+
             pr.flush();
             pr.close();
         } catch (FileNotFoundException e)
@@ -196,19 +258,19 @@ public class Reading_Activity extends ActionBarActivity
             case Sensor.TYPE_AMBIENT_TEMPERATURE:
                 currentTemp = sensorVal;
                 TextView tempText = (TextView)findViewById(R.id.txtTempReading);
-                tempText.setText(toDisplay);
+                tempText.setText(toDisplay+ " °C");
                 break;
 
             case Sensor.TYPE_RELATIVE_HUMIDITY:
                 currentHumid = sensorVal;
                 TextView humidText = (TextView)findViewById(R.id.txtHumidtyReading);
-                humidText.setText(toDisplay);
+                humidText.setText(toDisplay + " %");
                 break;
 
             case Sensor.TYPE_PRESSURE:
                 currentPressure = sensorVal;
                 TextView pressureText = (TextView)findViewById(R.id.txtPressureReading);
-                pressureText.setText(toDisplay);
+                pressureText.setText(toDisplay + " hPa");
                 break;
         }
 
@@ -219,5 +281,4 @@ public class Reading_Activity extends ActionBarActivity
 
     }
 
-
-}
+   }
