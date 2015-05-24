@@ -33,7 +33,7 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 
-public class Fragment_a extends Fragment implements SensorEventListener
+public class Fragment_a extends Fragment implements SensorEventListener,FragmentHasBecomeVisible
 {
 
 
@@ -114,15 +114,7 @@ public class Fragment_a extends Fragment implements SensorEventListener
         super.onStop();
         //Saves the data list out to a file when the program stops
         saveOutLocations();
-        try
-        {
-            FileOutputStream fos = getActivity().openFileOutput(LOG_FILENAME, Context.MODE_PRIVATE);
-            LogData.saveDataList(dataList, fos);
-
-        } catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
+        saveOutReadings();
     }
     private void populateSpinner()
     {
@@ -140,9 +132,18 @@ public class Fragment_a extends Fragment implements SensorEventListener
     private void takeReadings()
     {
         LogData newReading;
-        newReading = new LogData(currentTemp, currentPressure, currentHumid, locationOptions.get(locationSpinner.getSelectedItemPosition()));
-        dataList.add(newReading);
-        Toast.makeText(getActivity(), "Reading saved", Toast.LENGTH_SHORT).show();
+        int selectedItem = locationSpinner.getSelectedItemPosition() - 1;
+        if(selectedItem >= 0)
+        {
+            newReading = new LogData(currentTemp, currentPressure, currentHumid, locationOptions.get(selectedItem));
+            dataList.add(newReading);
+            saveOutReadings();
+            Toast.makeText(getActivity(), "Reading saved", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(getActivity(), "You must select a location", Toast.LENGTH_LONG).show();
+        }
     }
     private void addNewLocation()
     {
@@ -153,6 +154,7 @@ public class Fragment_a extends Fragment implements SensorEventListener
         {
             locationOptions.add(locationName);
             Toast.makeText(getActivity(), locationName +" added.", Toast.LENGTH_SHORT).show();
+            saveOutLocations();
         }
         else
         {
@@ -199,6 +201,18 @@ public class Fragment_a extends Fragment implements SensorEventListener
             e.printStackTrace();
         }
 
+    }
+    private void saveOutReadings()
+    {
+        try
+        {
+            FileOutputStream fos = getActivity().openFileOutput(LOG_FILENAME, Context.MODE_PRIVATE);
+            LogData.saveDataList(dataList, fos);
+
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
     }
     @Override
     public void onSensorChanged(SensorEvent event)
@@ -298,4 +312,9 @@ public class Fragment_a extends Fragment implements SensorEventListener
     }
 
 
+    @Override
+    public void isNowVisible()
+    {
+
+    }
 }

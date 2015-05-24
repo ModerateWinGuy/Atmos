@@ -123,6 +123,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/spinnerLocations"
         android:layout_below="@+id/txtOldLocationLabel"
-        android:layout_toEndOf="@+id/section_label"/>
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

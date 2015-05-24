@@ -77,7 +77,25 @@ public class MainActivity extends FragmentActivity
             }
         };
         _viewPager = (ViewPager) findViewById(R.id.pager);
+        _viewPager.setOffscreenPageLimit(2);
+        _viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener()
+        {
+            @Override
+            public void onPageScrolled(final int i, final float v, final int i2) {
+            }
+            @Override
+            public void onPageSelected(final int i) {
+                FragmentHasBecomeVisible fragment = (FragmentHasBecomeVisible) _fragmentPagerAdapter.instantiateItem(_viewPager, i);
+                if (fragment != null) {
+                    fragment.isNowVisible();
+                }
+            }
+            @Override
+            public void onPageScrollStateChanged(final int i) {
+            }
+        });
         _viewPager.setAdapter(_fragmentPagerAdapter);
+
     }
 
 }

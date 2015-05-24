@@ -12,15 +12,17 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 
-public class Fragment_b extends Fragment
+public class Fragment_b extends Fragment implements FragmentHasBecomeVisible
 {
     private static final String LOCATION_FILENAME = "Locations";
     private static final String LOG_FILENAME = "SavedDataFile";
     private List<LogData> dataList;
-
+    private ListView list;
+    private BaseAdapter adapter;
 
     public Fragment_b()
     {
@@ -28,6 +30,7 @@ public class Fragment_b extends Fragment
     }
     public void readInData()
     {
+        dataList = new ArrayList<LogData>();
         try
         {
             BufferedReader inputReader = new BufferedReader(new InputStreamReader(getActivity().openFileInput(LOG_FILENAME)));
@@ -51,7 +54,7 @@ public class Fragment_b extends Fragment
     {
         super.onActivityCreated(savedInstanceState);
         readInData();
-        BaseAdapter adapter = new BaseAdapter()
+        adapter = new BaseAdapter()
         {
 
             @Override
@@ -84,7 +87,7 @@ public class Fragment_b extends Fragment
 
                 DecimalFormat df = new DecimalFormat("#.00");
 
-                tempText.setText(df.format(dataList.get(i).getTemp()) +  " °C");
+                tempText.setText(df.format(dataList.get(i).getTemp()) +  " C");
                 humidText.setText(df.format(dataList.get(i).getHumidity()) + " %");
                 pressureText.setText(df.format(dataList.get(i).getPressure()) + " hPa");
                 locationText.setText(dataList.get(i).getLocationTag());
@@ -92,13 +95,24 @@ public class Fragment_b extends Fragment
                 return row;
             }
         };
-        ListView list = (ListView) getActivity().findViewById(R.id.listDataDisplay);
+        list = (ListView) getActivity().findViewById(R.id.listDataDisplay);
         list.setAdapter(adapter);
-
 
     }
 
 
+    @Override
+    public void isNowVisible()
+    {
+        readInData();
+        getActivity().runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                adapter.notifyDataSetChanged();
+            }
+        });
 
-
+    }
 }
