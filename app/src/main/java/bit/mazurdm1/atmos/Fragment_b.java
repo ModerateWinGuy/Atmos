@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,13 +85,15 @@ public class Fragment_b extends Fragment implements FragmentHasBecomeVisible
                 TextView humidText = (TextView) row.findViewById(R.id.txtHumidityText);
                 TextView pressureText = (TextView) row.findViewById(R.id.txtPressureTxt);
                 TextView locationText = (TextView) row.findViewById(R.id.txtLocationText);
-
+                TextView timeText = (TextView) row.findViewById(R.id.txtTimeStampText);
                 DecimalFormat df = new DecimalFormat("#.00");
 
                 tempText.setText(df.format(dataList.get(i).getTemp()) +  " C");
                 humidText.setText(df.format(dataList.get(i).getHumidity()) + " %");
                 pressureText.setText(df.format(dataList.get(i).getPressure()) + " hPa");
                 locationText.setText(dataList.get(i).getLocationTag());
+                Timestamp ts = dataList.get(i).getStamp();
+                timeText.setText(ts.toString());
 
                 return row;
             }

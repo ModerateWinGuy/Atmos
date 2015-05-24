@@ -64,6 +64,11 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
 
 
     }
+    private void flushAllData()
+    {
+        deleteLocationTagFile();
+        deleteLogFile();
+    }
     private void deleteLogFile()
     {
         try // for clearing the files when i make mistakes
@@ -265,8 +270,7 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
         currentHumid = 0;
         currentPressure = 0;
         currentTemp = 0;
-        //deleteLocationTagFile();
-        //deleteLogFile();
+        //flushAllData(); // Use to clean out all data
 
         //TODO Work on spinner
         readInLocations();
