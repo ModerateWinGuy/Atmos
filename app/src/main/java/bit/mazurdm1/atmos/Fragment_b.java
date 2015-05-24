@@ -1,21 +1,41 @@
 package bit.mazurdm1.atmos;
 
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.text.DecimalFormat;
+import java.util.List;
+
 
 public class Fragment_b extends Fragment
 {
     private static final String LOCATION_FILENAME = "Locations";
     private static final String LOG_FILENAME = "SavedDataFile";
+    private List<LogData> dataList;
 
 
     public Fragment_b()
     {
         // Required empty public constructor
+    }
+    public void readInData()
+    {
+        try
+        {
+            BufferedReader inputReader = new BufferedReader(new InputStreamReader(getActivity().openFileInput(LOG_FILENAME)));
+            dataList = LogData.loadFromFile(inputReader);
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
     }
 
 
@@ -26,6 +46,59 @@ public class Fragment_b extends Fragment
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_b, container, false);
     }
+
+    public void onActivityCreated (final Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+        readInData();
+        BaseAdapter adapter = new BaseAdapter()
+        {
+
+            @Override
+            public int getCount()
+            {
+                return dataList.size();
+            }
+
+            @Override
+            public Object getItem(int i)
+            {
+                return dataList.get(i);
+            }
+
+            @Override
+            public long getItemId(int i)
+            {
+                return i;
+            }
+
+            @Override
+            public View getView(int i, View view, ViewGroup viewGroup)
+            {
+                LayoutInflater inflater = getLayoutInflater(savedInstanceState);
+                View row = inflater.inflate(R.layout.readings_list_layout, viewGroup, false);
+                TextView tempText = (TextView) row.findViewById(R.id.txtTempText);
+                TextView humidText = (TextView) row.findViewById(R.id.txtHumidityText);
+                TextView pressureText = (TextView) row.findViewById(R.id.txtPressureTxt);
+                TextView locationText = (TextView) row.findViewById(R.id.txtLocationText);
+
+                DecimalFormat df = new DecimalFormat("#.00");
+
+                tempText.setText(df.format(dataList.get(i).getTemp()) +  " °C");
+                humidText.setText(df.format(dataList.get(i).getHumidity()) + " %");
+                pressureText.setText(df.format(dataList.get(i).getPressure()) + " hPa");
+                locationText.setText(dataList.get(i).getLocationTag());
+
+                return row;
+            }
+        };
+        ListView list = (ListView) getActivity().findViewById(R.id.listDataDisplay);
+        list.setAdapter(adapter);
+
+
+    }
+
+
 
 
 }

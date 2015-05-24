@@ -207,7 +207,7 @@ public class Fragment_a extends Fragment implements SensorEventListener
         float sensorValue = event.values[0];
         double sensorVal = sensorValue;
         DecimalFormat df = new DecimalFormat("#.00");
-        String toDisplay = df.format(sensorVal).toString();
+        String toDisplay = df.format(sensorVal);
         //Set the corresponding text by checking which sensor raised the event
         switch (event.sensor.getType())
         {
@@ -247,7 +247,7 @@ public class Fragment_a extends Fragment implements SensorEventListener
     public void onActivityCreated (Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        locationOptions = new ArrayList<>();
+        locationOptions = new ArrayList<String>();
         currentHumid = 0;
         currentPressure = 0;
         currentTemp = 0;

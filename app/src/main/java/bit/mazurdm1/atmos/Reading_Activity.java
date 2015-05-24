@@ -1,6 +1,5 @@
 package bit.mazurdm1.atmos;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -8,7 +7,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -50,7 +48,7 @@ public class Reading_Activity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_reading);
 
-        locationOptions = new ArrayList<>();
+        locationOptions = new ArrayList<String>();
         currentHumid = 0;
         currentPressure = 0;
         currentTemp = 0;

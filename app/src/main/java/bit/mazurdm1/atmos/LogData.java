@@ -17,6 +17,31 @@ import java.util.List;
  */
 public class LogData
 {
+    public double getTemp()
+    {
+        return temp;
+    }
+
+    public double getPressure()
+    {
+        return pressure;
+    }
+
+    public double getHumidity()
+    {
+        return humidity;
+    }
+
+    public Timestamp getStamp()
+    {
+        return stamp;
+    }
+
+    public String getLocationTag()
+    {
+        return locationTag;
+    }
+
     private double temp;     // In degrees C
     private double pressure; // in HPA
     private double humidity; // In %

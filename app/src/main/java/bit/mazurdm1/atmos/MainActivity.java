@@ -5,8 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,9 +68,9 @@ public class MainActivity extends FragmentActivity
             public CharSequence getPageTitle(final int position) {
                 switch (position) {
                     case FRAGMENT_ONE:
-                        return "Title One";
+                        return "Save Readings";
                     case FRAGMENT_TWO:
-                        return "Title Two";
+                        return "View Saved Readings";
                     default:
                         return null;
                 }
