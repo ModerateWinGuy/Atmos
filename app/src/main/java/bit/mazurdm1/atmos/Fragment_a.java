@@ -4,6 +4,7 @@ package bit.mazurdm1.atmos;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -272,6 +273,49 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_a, container, false);
     }
+    private void setUpSensors()
+    {
+        PackageManager PM= getActivity().getPackageManager();
+        boolean temp = PM.hasSystemFeature(PackageManager.FEATURE_SENSOR_AMBIENT_TEMPERATURE);
+        boolean pre = PM.hasSystemFeature(PackageManager.FEATURE_SENSOR_BAROMETER);
+        boolean humid = PM.hasSystemFeature(PackageManager.FEATURE_SENSOR_RELATIVE_HUMIDITY);
+
+        //Set up the sensors for reading in, if the phone has the correct sensors
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        if (temp)
+        {
+            mTemp = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+            sensorManager.registerListener(this, mTemp, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+        else
+        {
+            TextView tempText = (TextView)getActivity().findViewById(R.id.txtTempReading);
+            tempText.setText("Sensor not present on phone");
+        }
+        if (pre)
+        {
+            mPressure = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+            sensorManager.registerListener(this, mPressure, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+        else
+        {
+            TextView pressureText = (TextView)getActivity().findViewById(R.id.txtPressureReading);
+            pressureText.setText("Sensor not present on phone");
+        }
+        if (humid)
+        {
+            mHumid = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+            sensorManager.registerListener(this, mHumid, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+        else
+        {
+            TextView humidText = (TextView)getActivity().findViewById(R.id.txtHumidtyReading);
+            humidText.setText("Sensor not present on phone");
+        }
+
+
+
+    }
     @Override
     public void onActivityCreated (Bundle savedInstanceState)
     {
@@ -282,17 +326,11 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
         currentTemp = 0;
         //flushAllData(); // Use to clean out all data
 
-        //TODO Work on spinner
-        readInLocations();
 
-        //Set up the sensors for reading in
-        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
-        mPressure = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
-        mTemp = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
-        mHumid = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
-        sensorManager.registerListener(this, mPressure, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, mTemp, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, mHumid, SensorManager.SENSOR_DELAY_NORMAL);
+        readInLocations();
+        setUpSensors();
+
+
         Button logReadingBtn = (Button)getActivity().findViewById(R.id.btnSaveReading);
         // bind the take reading method to the click of the button
         logReadingBtn.setOnClickListener(new View.OnClickListener()
