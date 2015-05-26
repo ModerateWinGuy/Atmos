@@ -218,6 +218,17 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
     {
         FileOperations.saveToFile(locationOptions, FILENAME_LOCATIONS, getActivity());
     }
+    private void readInReadings()
+    {
+        try
+        {
+            BufferedReader inputReader = new BufferedReader(new InputStreamReader(getActivity().openFileInput(FILENAME_DATA)));
+            dataList = LogData.loadFromFile(inputReader);
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+    }
     private void saveOutReadings()
     {
         try
@@ -360,14 +371,7 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
 
 
         // Load in all saved file data
-        try
-        {
-            BufferedReader inputReader = new BufferedReader(new InputStreamReader(getActivity().openFileInput(FILENAME_DATA)));
-            dataList = LogData.loadFromFile(inputReader);
-        } catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
+        readInReadings();
         populateSpinner();
 
     }
@@ -376,6 +380,6 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
     @Override
     public void isNowVisible()
     {
-
+        readInReadings();
     }
 }
