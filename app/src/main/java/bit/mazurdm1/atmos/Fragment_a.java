@@ -1,7 +1,9 @@
 package bit.mazurdm1.atmos;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -23,7 +25,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +42,8 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
     {
         // Required empty public constructor
     }
-    private static final String LOCATION_FILENAME = "Locations";
-    private static final String LOG_FILENAME = "SavedDataFile";
+    private static final String FILENAME_LOCATIONS = "Locations";
+    private static final String FILENAME_DATA = "SavedDataFile";
 
     private SensorManager sensorManager;
     private Sensor mPressure;
@@ -59,10 +60,6 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
-
     }
     private void flushAllData()
     {
@@ -73,7 +70,7 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
     {
         try // for clearing the files when i make mistakes
         {
-            FileOutputStream fos = getActivity().openFileOutput(LOG_FILENAME, Context.MODE_PRIVATE);
+            FileOutputStream fos = getActivity().openFileOutput(FILENAME_DATA, Context.MODE_PRIVATE);
             fos.flush();
             fos.close();
         } catch (FileNotFoundException e)
@@ -88,7 +85,7 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
     {
         try // for clearing the files when i make mistakes
         {
-            FileOutputStream fos = getActivity().openFileOutput(LOCATION_FILENAME, Context.MODE_PRIVATE);
+            FileOutputStream fos = getActivity().openFileOutput(FILENAME_LOCATIONS, Context.MODE_PRIVATE);
             fos.flush();
             fos.close();
         } catch (FileNotFoundException e)
@@ -166,52 +163,65 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
             Toast.makeText(getActivity(), "To add a location you just give it a name", Toast.LENGTH_LONG).show();
         }
     }
+    private void removeSelectedLocation()
+    {
+        final int locationToRemove = locationSpinner.getSelectedItemPosition() - 1;
+        if (locationToRemove >= 0)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setTitle("Confirm");
+            builder.setMessage("Are you sure you want to delete this?");
+
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener()
+            {
+
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    // Do nothing but close the dialog
+
+                    locationOptions.remove(locationToRemove);
+                    Toast.makeText(getActivity(), "Location removed", Toast.LENGTH_SHORT).show();
+                    saveOutLocations();
+                    populateSpinner();
+                    dialog.dismiss();
+                }
+
+            });
+
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+            {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    // Do nothing
+                    dialog.dismiss();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+
+        }
+        else
+        {
+            Toast.makeText(getActivity(), "To remove a location you must select one", Toast.LENGTH_LONG).show();
+        }
+    }
     private void readInLocations()
     {
-        try
-        {
-            BufferedReader inputReader = new BufferedReader(new InputStreamReader(getActivity().openFileInput(LOCATION_FILENAME)));
-            String inputString;
-            while((inputString=inputReader.readLine()) != null)
-            {
-                locationOptions.add(inputString);
-            }
-
-            inputReader.close();
-        } catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        locationOptions = FileOperations.readInFile(FILENAME_LOCATIONS,getActivity());
     }
     private void saveOutLocations()
     {
-        //Read in a list of all used location tags so the spinner can be populated with them
-        try
-        {
-            FileOutputStream fos = getActivity().openFileOutput(LOCATION_FILENAME, Context.MODE_PRIVATE);
-            PrintWriter pr = new PrintWriter(fos);
-
-            for(String txt : locationOptions)
-            {
-                pr.println(txt);
-            }
-
-            pr.flush();
-            pr.close();
-        } catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-
+        FileOperations.saveToFile(locationOptions, FILENAME_LOCATIONS, getActivity());
     }
     private void saveOutReadings()
     {
         try
         {
-            FileOutputStream fos = getActivity().openFileOutput(LOG_FILENAME, Context.MODE_PRIVATE);
+            FileOutputStream fos = getActivity().openFileOutput(FILENAME_DATA, Context.MODE_PRIVATE);
             LogData.saveDataList(dataList, fos);
 
         } catch (FileNotFoundException e)
@@ -298,6 +308,15 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
             public void onClick(View v){addNewLocation();
                 populateSpinner();
             }});
+        Button removeLocationButton = (Button)getActivity().findViewById(R.id.btnRemoveSelectedLocation);
+        removeLocationButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                removeSelectedLocation();
+            }
+        });
         locationSpinner = (Spinner)getActivity().findViewById(R.id.spinnerLocations);
         locationSpinner.setPrompt("Select a location to tag the reading as");
 
@@ -305,7 +324,7 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
         // Load in all saved file data
         try
         {
-            BufferedReader inputReader = new BufferedReader(new InputStreamReader(getActivity().openFileInput(LOG_FILENAME)));
+            BufferedReader inputReader = new BufferedReader(new InputStreamReader(getActivity().openFileInput(FILENAME_DATA)));
             dataList = LogData.loadFromFile(inputReader);
         } catch (FileNotFoundException e)
         {

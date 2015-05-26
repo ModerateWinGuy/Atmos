@@ -84,10 +84,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Add New Location"
+        android:text="Choose a location to tag the reading as"
         android:id="@+id/txtAddNewLabel"
         android:layout_above="@+id/editTxtNewLocation"
-        android:layout_centerHorizontal="true"/>
+        android:layout_toEndOf="@+id/section_label"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -105,9 +105,9 @@
         android:layout_height="wrap_content"
         android:text="Add Location"
         android:id="@+id/btnAddNewLocation"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/txtAddNewLabel"
-        android:layout_toEndOf="@+id/txtAddNewLabel"/>
+        android:layout_alignBaseline="@+id/editTxtNewLocation"
+        android:layout_alignBottom="@+id/editTxtNewLocation"
+        android:layout_alignParentEnd="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -116,13 +116,24 @@
         android:text="Select added Location"
         android:id="@+id/txtOldLocationLabel"
         android:layout_below="@+id/btnAddNewLocation"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="16dp"/>
 
     <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/spinnerLocations"
         android:layout_below="@+id/txtOldLocationLabel"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentStart="true"/>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remove selected Location"
+        android:id="@+id/btnRemoveSelectedLocation"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/editTxtNewLocation"
+        android:layout_alignTop="@+id/txtOldLocationLabel"/>
 
 </RelativeLayout>

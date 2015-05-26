@@ -1,42 +1,27 @@
 package bit.mazurdm1.atmos;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
+
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  */
-public class MainActivity extends FragmentActivity
+public class MainActivity extends ActionBarActivity
 {
 
-    /**
-     * Identifier for the first fragment.
-     */
     public static final int FRAGMENT_ONE = 0;
-
-    /**
-     * Identifier for the second fragment.
-     */
     public static final int FRAGMENT_TWO = 1;
-
-    /**
-     * Number of total fragments.
-     */
     public static final int FRAGMENTS = 2;
-
-    /**
-     * The adapter definition of the fragments.
-     */
     private FragmentPagerAdapter _fragmentPagerAdapter;
-
-    /**
-     * The ViewPager that hosts the section contents.
-     */
     private ViewPager _viewPager;
 
     /**
@@ -68,7 +53,7 @@ public class MainActivity extends FragmentActivity
             public CharSequence getPageTitle(final int position) {
                 switch (position) {
                     case FRAGMENT_ONE:
-                        return "Save Readings";
+                        return "Take Readings";
                     case FRAGMENT_TWO:
                         return "View Saved Readings";
                     default:

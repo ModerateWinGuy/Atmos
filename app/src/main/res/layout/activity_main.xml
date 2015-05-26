@@ -9,6 +9,10 @@
         android:id="@+id/pager_title_strip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top" />
-
+        android:layout_gravity="top"
+        android:background="#ff0075a3"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp" />
 </android.support.v4.view.ViewPager>
