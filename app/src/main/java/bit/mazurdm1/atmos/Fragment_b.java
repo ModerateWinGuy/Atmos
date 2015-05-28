@@ -31,7 +31,7 @@ public class Fragment_b extends Fragment implements FragmentHasBecomeVisible
     private List<LogData> dataList;
     private ListView list;
     private BaseAdapter adapter;
-
+///TODO FIX SAVING ISSUE
     public Fragment_b()
     {
         // Required empty public constructor

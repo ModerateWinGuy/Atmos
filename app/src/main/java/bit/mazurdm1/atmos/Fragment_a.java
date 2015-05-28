@@ -220,6 +220,7 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
     }
     private void readInReadings()
     {
+        dataList = new ArrayList<LogData>();
         try
         {
             BufferedReader inputReader = new BufferedReader(new InputStreamReader(getActivity().openFileInput(FILENAME_DATA)));
