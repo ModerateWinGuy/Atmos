@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,7 +113,7 @@ public class Fragment_b extends Fragment implements FragmentHasBecomeVisible
                 pressureText.setText(df.format(dataList.get(i).getPressure()) + " hPa");
                 locationText.setText(dataList.get(i).getLocationTag());
                 Timestamp ts = dataList.get(i).getStamp();
-                timeText.setText(ts.toString());
+                timeText.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(ts));
 
                 return row;
             }
