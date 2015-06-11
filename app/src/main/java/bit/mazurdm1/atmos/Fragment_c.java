@@ -6,10 +6,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
+
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -19,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-
 
 
 public class Fragment_c extends Fragment implements FragmentHasBecomeVisible
@@ -44,7 +44,6 @@ public class Fragment_c extends Fragment implements FragmentHasBecomeVisible
     public void onActivityCreated (Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        //getView().setBackgroundColor(Color.BLACK);
         readInData();
         readInLocations();
         setUpSpinner();
@@ -55,35 +54,28 @@ public class Fragment_c extends Fragment implements FragmentHasBecomeVisible
             @Override
             public void onClick(View view)
             {
-                int selectedItem = locationSpinner.getSelectedItemPosition() - 1;
-                if(selectedItem >= 0)
+                int selectedItem = locationSpinner.getSelectedItemPosition();
+                if (selectedItem >= 0)
                 {
                     regenerateGraph(locations.get(selectedItem));
-                }
-                else
+                } else
                 {
-                    regenerateGraph("");
+                    regenerateGraph("All");
                 }
             }
         });
         //Automatically populate the graph with all of the data
-        regenerateGraph("");
-
-
+        regenerateGraph("All");
     }
 
     private void setUpSpinner()
     {
         String[] spinnerOptions = locations.toArray(new String[locations.size()]);
-        locationSpinner = (Spinner)getActivity().findViewById(R.id.spinnerLocations);
-        ArrayAdapter<String> locationsForSpinner = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, spinnerOptions);
-        locationsForSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        locationSpinner.setAdapter(
-                new NothingSelectedSpinnerAdapter(
-                        locationsForSpinner,
-                        R.layout.contact_spinner_row_nothing_selected,
-                        // R.layout.contact_spinner_nothing_selected_dropdown, // Optional
-                        getActivity()));
+        locationSpinner = (Spinner)getActivity().findViewById(R.id.spinnerFilterLocations);
+        ArrayAdapter<String> locationsForSpinner = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, spinnerOptions);
+
+        locationSpinner.setAdapter(locationsForSpinner);
+        locationSpinner.setPrompt("Select a speific Location");
     }
 
     private void regenerateGraph(String addOption)
@@ -91,7 +83,7 @@ public class Fragment_c extends Fragment implements FragmentHasBecomeVisible
         List<DataPoint> dataToAdd = createListOfData(addOption);
         DataPoint[] toAdd = dataToAdd.toArray(new DataPoint[dataToAdd.size()]);
         LineGraphSeries theSeries = new LineGraphSeries(toAdd);
-        if (dataToAdd.size()>0) // To avoid null errors from empty lists if the user does not select an option
+        if (dataToAdd.size()>1) // To avoid null errors from empty lists if the user does not select an option
         {
             theSeries.setThickness(4);
             theSeries.setDrawDataPoints(true);
@@ -107,7 +99,10 @@ public class Fragment_c extends Fragment implements FragmentHasBecomeVisible
             graph.removeAllSeries();
             graph.addSeries(theSeries);
             graph.refreshDrawableState();
-
+        }
+        else
+        {
+            Toast.makeText(getActivity(), "Two readings needed for graphing", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -127,9 +122,11 @@ public class Fragment_c extends Fragment implements FragmentHasBecomeVisible
             e.printStackTrace();
         }
     }
+    //Populates the locations list
     private void readInLocations()
     {
         locations = FileOperations.readInFile(FILENAME_LOCATIONS,getActivity());
+        locations.add(0,"All");
     }
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -144,13 +141,13 @@ public class Fragment_c extends Fragment implements FragmentHasBecomeVisible
      */
     private List<DataPoint> createListOfData(String locationOptions)
     {
-        // pass in a blank string to add in all data
+        // pass in "All" string to add in all data
         List<DataPoint> data = new ArrayList<DataPoint>();
         // A offset to make the timestamp more manageable
         double offset = dataList.get(0).getStamp().getTime();
         for(LogData dataPoint : dataList)
         {
-            if(locationOptions == "")
+            if(locationOptions == "All")
             {
                 data.add(new DataPoint(dataPoint.getStamp().getTime() - offset, dataPoint.getTemp()));
             }
@@ -166,8 +163,7 @@ public class Fragment_c extends Fragment implements FragmentHasBecomeVisible
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_c_layout, container, false);
@@ -178,7 +174,6 @@ public class Fragment_c extends Fragment implements FragmentHasBecomeVisible
     public void onDetach()
     {
         super.onDetach();
-
     }
 
     @Override

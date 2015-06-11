@@ -122,7 +122,7 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
     }
     private void populateSpinner()
     {
-        ArrayAdapter adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item, locationOptions);
+        ArrayAdapter adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item, locationOptions);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         locationSpinner.setPrompt("Select a location to tag with");
 
