@@ -1,12 +1,14 @@
 package bit.mazurdm1.atmos;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.view.inputmethod.InputMethodManager;
 
 
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class MainActivity extends ActionBarActivity
      * List of fragments.
      */
     private List<Fragment> _fragments = new ArrayList<Fragment>();
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {

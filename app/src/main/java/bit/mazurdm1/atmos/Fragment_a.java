@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -132,6 +133,8 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
                         // R.layout.contact_spinner_nothing_selected_dropdown, // Optional
                         getActivity()));
     }
+
+    //Runs when the save reading button is pressed and saves a reading to the datalist and saves it to the file.
     private void takeReadings()
     {
         LogData newReading;
@@ -357,6 +360,10 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
             @Override
             public void onClick(View v){addNewLocation();
                 populateSpinner();
+                hideSoftKeyboard();
+                EditText userInput = (EditText)getActivity().findViewById(R.id.editTxtNewLocation);
+                userInput.setText("");
+
             }});
         Button removeLocationButton = (Button)getActivity().findViewById(R.id.btnRemoveSelectedLocation);
         removeLocationButton.setOnClickListener(new View.OnClickListener()
@@ -377,7 +384,16 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
 
     }
 
-
+    //Hides the keyboard when the add location button is pressed
+    private void hideSoftKeyboard()
+    {
+        if(getActivity().getCurrentFocus()!=null && getActivity().getCurrentFocus() instanceof EditText )
+        {
+            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            EditText userInput = (EditText)getActivity().findViewById(R.id.editTxtNewLocation);
+            imm.hideSoftInputFromWindow(userInput.getWindowToken(), 0);
+        }
+    }
     @Override
     public void isNowVisible()
     {

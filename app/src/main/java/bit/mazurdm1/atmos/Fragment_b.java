@@ -5,12 +5,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,17 +33,21 @@ public class Fragment_b extends Fragment implements FragmentHasBecomeVisible
     private static final String FILENAME_LOCATIONS = "Locations";
     private static final String FILENAME_DATA = "SavedDataFile";
     private List<LogData> dataList;
+    private List<LogData> displayData;
+    private List<String> locations;
     private ListView list;
+    private Spinner locationSpinner;
     private BaseAdapter adapter;
-///TODO FIX SAVING ISSUE
+
     public Fragment_b()
     {
         // Required empty public constructor
     }
 
-    public void readInData()
+    private void readInData()
     {
         dataList = new ArrayList<LogData>();
+
         try
         {
             BufferedReader inputReader = new BufferedReader(new InputStreamReader(getActivity().openFileInput(FILENAME_DATA)));
@@ -49,6 +56,31 @@ public class Fragment_b extends Fragment implements FragmentHasBecomeVisible
         {
             e.printStackTrace();
         }
+    }
+
+    //Pass in a string to filter for that location, or the word "All" for all data
+    private void filterDisplayData(String filter)
+    {
+        displayData = new ArrayList<LogData>();
+        for (LogData item : dataList)
+        {
+            if(filter != "All")
+            {
+                if (item.getLocationTag().equals(filter))
+                {
+                    displayData.add(item);
+                }
+            }
+            else
+            {
+                displayData.add(item);
+            }
+        }
+    }
+    private void readInLocations()
+    {
+        locations = FileOperations.readInFile(FILENAME_LOCATIONS,getActivity());
+        locations.add(0,"All");
     }
     private void saveOutReadings()
     {
@@ -61,6 +93,34 @@ public class Fragment_b extends Fragment implements FragmentHasBecomeVisible
         {
             e.printStackTrace();
         }
+    }
+    private void populateSpinner()
+    {
+
+        ArrayAdapter adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item, locations);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        locationSpinner.setPrompt("Location filter");
+
+        locationSpinner.setAdapter(
+                new NothingSelectedSpinnerAdapter(
+                        adapter,
+                        R.layout.contact_spinner_row_nothing_selected,
+                        // R.layout.contact_spinner_nothing_selected_dropdown, // Optional
+                        getActivity()));
+        locationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
+            {
+                refreshList();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView)
+            {
+
+            }
+        });
     }
 
 
@@ -76,18 +136,21 @@ public class Fragment_b extends Fragment implements FragmentHasBecomeVisible
     {
         super.onActivityCreated(savedInstanceState);
         readInData();
+        readInLocations();
+        locationSpinner = (Spinner)getActivity().findViewById(R.id.spinnerlocationFilter);
+        filterDisplayData("All");
         adapter = new BaseAdapter()
         {
             @Override
             public int getCount()
             {
-                return dataList.size();
+                return displayData.size();
             }
 
             @Override
             public Object getItem(int i)
             {
-                return dataList.get(i);
+                return displayData.get(i);
             }
 
             @Override
@@ -108,11 +171,11 @@ public class Fragment_b extends Fragment implements FragmentHasBecomeVisible
                 TextView timeText = (TextView) row.findViewById(R.id.txtTimeStampText);
                 DecimalFormat df = new DecimalFormat("#.00");
 
-                tempText.setText(df.format(dataList.get(i).getTemp()) + " C");
-                humidText.setText(df.format(dataList.get(i).getHumidity()) + " %");
-                pressureText.setText(df.format(dataList.get(i).getPressure()) + " hPa");
-                locationText.setText(dataList.get(i).getLocationTag());
-                Timestamp ts = dataList.get(i).getStamp();
+                tempText.setText(df.format(displayData.get(i).getTemp()) + " C");
+                humidText.setText(df.format(displayData.get(i).getHumidity()) + " %");
+                pressureText.setText(df.format(displayData.get(i).getPressure()) + " hPa");
+                locationText.setText(displayData.get(i).getLocationTag());
+                Timestamp ts = displayData.get(i).getStamp();
                 timeText.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(ts));
 
                 return row;
@@ -135,8 +198,8 @@ public class Fragment_b extends Fragment implements FragmentHasBecomeVisible
 
                         public void onClick(DialogInterface dialog, int which)
                         {
-                            // Do nothing but close the dialog
-                            dataList.remove(selectedItem);
+                            // Remove the deleted item and save the new dataset back to the file
+                            dataList.remove(dataList.indexOf(displayData.get(selectedItem)));
 
                             Toast.makeText(getActivity(), "Reading", Toast.LENGTH_SHORT).show();
                             refreshList();
@@ -168,6 +231,18 @@ public class Fragment_b extends Fragment implements FragmentHasBecomeVisible
 
     private void refreshList()
     {
+        int selectedItem = locationSpinner.getSelectedItemPosition() - 1;
+        if(selectedItem >= 0)
+        {
+            filterDisplayData(locations.get(selectedItem));
+
+        }
+        else
+        {
+            filterDisplayData("All");
+        }
+
+
         getActivity().runOnUiThread(new Runnable()
         {
             @Override
@@ -178,11 +253,14 @@ public class Fragment_b extends Fragment implements FragmentHasBecomeVisible
         });
     }
 
+    //Method that is called when the fragment is swiped too, so that if any new readings have been added they can be loaded up and displayed in the list
     @Override
     public void isNowVisible()
     {
         readInData();
+        readInLocations();
         refreshList();
+        populateSpinner();
 
     }
 }

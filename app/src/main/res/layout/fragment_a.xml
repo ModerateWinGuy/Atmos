@@ -96,6 +96,7 @@
         android:id="@+id/editTxtNewLocation"
         android:hint="Add new location Name"
         android:layout_centerVertical="true"
+        android:imeOptions="actionDone"
         android:layout_toRightOf="@+id/section_label"
         android:layout_alignRight="@+id/txtAddNewLabel"
         android:layout_alignEnd="@+id/txtAddNewLabel"/>
@@ -125,7 +126,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/spinnerLocations"
         android:layout_below="@+id/txtOldLocationLabel"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/btnRemoveSelectedLocation"
+        android:layout_alignEnd="@+id/editTxtNewLocation"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -133,8 +136,8 @@
         android:layout_height="wrap_content"
         android:text="Remove selected Location"
         android:id="@+id/btnRemoveSelectedLocation"
+        android:layout_alignTop="@+id/spinnerLocations"
         android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/editTxtNewLocation"
-        android:layout_alignTop="@+id/txtOldLocationLabel"/>
+        android:layout_toEndOf="@+id/editTxtNewLocation"/>
 
 </RelativeLayout>

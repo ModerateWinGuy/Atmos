@@ -1,10 +1,12 @@
 package bit.mazurdm1.atmos;
 
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -42,33 +44,71 @@ public class Fragment_c extends Fragment implements FragmentHasBecomeVisible
     public void onActivityCreated (Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-
+        //getView().setBackgroundColor(Color.BLACK);
         readInData();
         readInLocations();
-        locationSpinner = (Spinner)getActivity().findViewById(R.id.spinnerLocations);
-        graph = new GraphView(getActivity());
+        setUpSpinner();
+        graph = (GraphView)getActivity().findViewById(R.id.graph);
         generateGraphButton = (Button) getActivity().findViewById(R.id.btnReGenerateGraph);
         generateGraphButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
-                regenerateGraph();
+                int selectedItem = locationSpinner.getSelectedItemPosition() - 1;
+                if(selectedItem >= 0)
+                {
+                    regenerateGraph(locations.get(selectedItem));
+                }
+                else
+                {
+                    regenerateGraph("");
+                }
             }
         });
         //Automatically populate the graph with all of the data
-        List<DataPoint> dataToAdd = createListOfData("");
-        DataPoint[] toAdd = dataToAdd.toArray(new DataPoint[dataToAdd.size()]);
-        graph.addSeries(new LineGraphSeries(toAdd));
-        //series.a
+        regenerateGraph("");
+
+
     }
 
-    private void regenerateGraph()
+    private void setUpSpinner()
     {
-        List<DataPoint> dataToAdd = createListOfData(locationSpinner.getSelectedItem().toString());
+        String[] spinnerOptions = locations.toArray(new String[locations.size()]);
+        locationSpinner = (Spinner)getActivity().findViewById(R.id.spinnerLocations);
+        ArrayAdapter<String> locationsForSpinner = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, spinnerOptions);
+        locationsForSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        locationSpinner.setAdapter(
+                new NothingSelectedSpinnerAdapter(
+                        locationsForSpinner,
+                        R.layout.contact_spinner_row_nothing_selected,
+                        // R.layout.contact_spinner_nothing_selected_dropdown, // Optional
+                        getActivity()));
+    }
+
+    private void regenerateGraph(String addOption)
+    {
+        List<DataPoint> dataToAdd = createListOfData(addOption);
         DataPoint[] toAdd = dataToAdd.toArray(new DataPoint[dataToAdd.size()]);
-        graph.removeAllSeries();
-        graph.addSeries(new LineGraphSeries(toAdd));
+        LineGraphSeries theSeries = new LineGraphSeries(toAdd);
+        if (dataToAdd.size()>0) // To avoid null errors from empty lists if the user does not select an option
+        {
+            theSeries.setThickness(4);
+            theSeries.setDrawDataPoints(true);
+            theSeries.setColor(Color.BLUE);
+            graph.setTitle("Temperate Over Time");
+            graph.getGridLabelRenderer().setHorizontalLabelsVisible(false);
+            graph.getGridLabelRenderer().setVerticalLabelsVisible(true);
+            graph.getViewport().setXAxisBoundsManual(true);
+
+            graph.getViewport().setMinX(dataToAdd.get(0).getX());
+            graph.getViewport().setMaxX(dataToAdd.get(dataToAdd.size() - 1).getX());
+
+            graph.removeAllSeries();
+            graph.addSeries(theSeries);
+            graph.refreshDrawableState();
+
+        }
     }
 
     private void readInData()
@@ -97,21 +137,28 @@ public class Fragment_c extends Fragment implements FragmentHasBecomeVisible
         super.onCreate(savedInstanceState);
 
     }
+
+    /*
+     * Method that creates a list data that matches the location filter
+     * @pram locationOptions a string to filter which locations to put in the list
+     */
     private List<DataPoint> createListOfData(String locationOptions)
     {
         // pass in a blank string to add in all data
         List<DataPoint> data = new ArrayList<DataPoint>();
+        // A offset to make the timestamp more manageable
+        double offset = dataList.get(0).getStamp().getTime();
         for(LogData dataPoint : dataList)
         {
             if(locationOptions == "")
             {
-                data.add(new DataPoint(dataPoint.getStamp().getTime(), dataPoint.getTemp())); //TODO check if long will work instead of double
+                data.add(new DataPoint(dataPoint.getStamp().getTime() - offset, dataPoint.getTemp()));
             }
             else
             {
-                if (dataPoint.getLocationTag() == locationOptions)
+                if (dataPoint.getLocationTag().equals(locationOptions) )
                 {
-                    data.add(new DataPoint(dataPoint.getStamp().getTime(), dataPoint.getTemp()));
+                    data.add(new DataPoint(dataPoint.getStamp().getTime() - offset, dataPoint.getTemp()));
                 }
             }
         }
@@ -137,9 +184,9 @@ public class Fragment_c extends Fragment implements FragmentHasBecomeVisible
     @Override
     public void isNowVisible()
     {
-        ArrayAdapter<String> locationsForSpinner = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, locations);
-        locationsForSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        locationSpinner.setAdapter(locationsForSpinner);
+        readInLocations();
+        readInData();
+        setUpSpinner();
     }
 
 }
