@@ -167,7 +167,7 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
             Toast.makeText(getActivity(), "To add a location you just give it a name", Toast.LENGTH_LONG).show();
         }
     }
-    private void removeSelectedLocation()
+    private void removeSelectedLocation() // Removes the location that is currently selected in the location spinner
     {
         final int locationToRemove = locationSpinner.getSelectedItemPosition() - 1;
         if (locationToRemove >= 0)
@@ -213,15 +213,15 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
             Toast.makeText(getActivity(), "To remove a location you must select one", Toast.LENGTH_LONG).show();
         }
     }
-    private void readInLocations()
+    private void readInLocations() // Reads in all of the locations from the locations file
     {
         locationOptions = FileOperations.readInFile(FILENAME_LOCATIONS,getActivity());
     }
-    private void saveOutLocations()
+    private void saveOutLocations() // saves out the locations list to the locations file
     {
         FileOperations.saveToFile(locationOptions, FILENAME_LOCATIONS, getActivity());
     }
-    private void readInReadings()
+    private void readInReadings() // Reads in all of the saved out data to the data list
     {
         dataList = new ArrayList<LogData>();
         try
@@ -233,7 +233,7 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
             e.printStackTrace();
         }
     }
-    private void saveOutReadings()
+    private void saveOutReadings() // Saves out all of the data from the datalist
     {
         try
         {
@@ -246,7 +246,7 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
         }
     }
     @Override
-    public void onSensorChanged(SensorEvent event)
+    public void onSensorChanged(SensorEvent event) // The event that runs when one of the atmosphere sensors changes their reading
     {
         //Read in the value from the event
         float sensorValue = event.values[0];

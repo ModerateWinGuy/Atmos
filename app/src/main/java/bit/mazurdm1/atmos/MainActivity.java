@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,7 +73,7 @@ public class MainActivity extends ActionBarActivity
             public void onPageSelected(final int i) {
                 FragmentHasBecomeVisible fragment = (FragmentHasBecomeVisible) _fragmentPagerAdapter.instantiateItem(_viewPager, i);
                 if (fragment != null) {
-                    fragment.isNowVisible();
+                    fragment.isNowVisible(); // Runs the nowvisible method whenever a fragment is switched to
                 }
             }
             @Override
