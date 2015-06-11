@@ -14,7 +14,18 @@
         android:layout_height="wrap_content"
         android:id="@+id/spinnerLocations"
         android:layout_gravity="center"
-        android:layout_below="@+id/graph"
-        android:layout_alignParentStart="true"/>
+        android:layout_marginBottom="63dp"
+        android:layout_above="@+id/btnReGenerateGraph"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Re-Generate Graph"
+        android:id="@+id/btnReGenerateGraph"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="28dp"/>
 
 </RelativeLayout>

@@ -20,7 +20,8 @@ public class MainActivity extends ActionBarActivity
 
     public static final int FRAGMENT_ONE = 0;
     public static final int FRAGMENT_TWO = 1;
-    public static final int FRAGMENTS = 2;
+    public static final int FRAGMENT_THREE = 2;
+    public static final int FRAGMENTS = 3;
     private FragmentPagerAdapter _fragmentPagerAdapter;
     private ViewPager _viewPager;
 
@@ -38,6 +39,7 @@ public class MainActivity extends ActionBarActivity
         // Create fragments.
         _fragments.add(FRAGMENT_ONE, new Fragment_a());
         _fragments.add(FRAGMENT_TWO, new Fragment_b());
+        _fragments.add(FRAGMENT_THREE, new Fragment_c());
 
         // Setup the fragments, defining the number of fragments, the screens and titles.
         _fragmentPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()){
@@ -56,6 +58,8 @@ public class MainActivity extends ActionBarActivity
                         return "Take Readings";
                     case FRAGMENT_TWO:
                         return "View Saved Readings";
+                    case FRAGMENT_THREE:
+                        return "Temprature Graph";
                     default:
                         return null;
                 }
