@@ -14,6 +14,7 @@ import java.util.List;
 
 /**
  * Created by Daniel on 23-May-15.
+ * A class used to log all the the data that comes from the phones sensors
  */
 public class LogData
 {
@@ -48,7 +49,6 @@ public class LogData
     private Timestamp stamp;
     private String locationTag;
 
-    //TODO add in string for tags and make it read in/out
 
     // default constructor for when the time of creation is the timestamp
     public LogData(double sTemp, double sPressure, double sHumidity, String sLocationTag)

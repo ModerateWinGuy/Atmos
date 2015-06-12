@@ -156,7 +156,7 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
         String locationName = "";
         EditText userInput = (EditText)getActivity().findViewById(R.id.editTxtNewLocation);
         locationName = userInput.getText().toString();
-        if (locationName != "")
+        if (!locationName.equals(""))
         {
             locationOptions.add(locationName);
             Toast.makeText(getActivity(), locationName +" added.", Toast.LENGTH_SHORT).show();
@@ -164,7 +164,7 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
         }
         else
         {
-            Toast.makeText(getActivity(), "To add a location you just give it a name", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "To add a location you must give it a name", Toast.LENGTH_LONG).show();
         }
     }
     private void removeSelectedLocation() // Removes the location that is currently selected in the location spinner
@@ -217,7 +217,7 @@ public class Fragment_a extends Fragment implements SensorEventListener,Fragment
     {
         locationOptions = FileOperations.readInFile(FILENAME_LOCATIONS,getActivity());
     }
-    private void saveOutLocations() // saves out the locations list to the locations file
+    private void saveOutLocations() // saves out the locations list to the locations files
     {
         FileOperations.saveToFile(locationOptions, FILENAME_LOCATIONS, getActivity());
     }

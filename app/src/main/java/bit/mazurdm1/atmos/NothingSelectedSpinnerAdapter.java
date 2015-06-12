@@ -1,6 +1,6 @@
 package bit.mazurdm1.atmos;
 // Copied from http://stackoverflow.com/questions/867518/how-to-make-an-android-spinner-with-initial-text-select-one
-
+// Code allows a spinner to show a default text message when nothing has been selected
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.view.LayoutInflater;
